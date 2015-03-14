@@ -31,6 +31,7 @@ UIviewController实例，用notifications就会有一个更加清晰的解耦解
 最后[iOS](https://gist.github.com/hpique/7554209)和[OS X](https://gist.github.com/hpique/8198196)的一系列的公共通知都在附件里。我们将用iOS的类举例子，在OS X中也实用。
 
 ##Notifications类
+--
 
 Foundation框架提供了3个类供你处理通知
 
@@ -42,6 +43,7 @@ OS X 为了在两个进程之间通信提供第四个方法叫NSDistributedNotif
 
 
 ##Receiving notifications
+--
 
 要接收一个通知你只需要知道他的名字就行了。Cocoa和Cocoa Touch框架对消息的命名很有趣比如 UIKeyboardWillShowNotification and UIApplicationDidReceiveMemoryWarningNotification 在iOS7（[annex A](https://gist.github.com/hpique/7554209)）和OS X10.9([annex B](https://gist.github.com/hpique/8198196))中分别有165和393个公共通知，之后我们来学习如何创建自己的notifications。
 
@@ -72,18 +74,20 @@ OS X 为了在两个进程之间通信提供第四个方法叫NSDistributedNotif
  
  
 ##Adding the observer
+--
 
 接收通知的对象被称为观察者，必须加到NSNotificationCenter。除非你有很强的理由不这么做，否则永远都是defaultCenter。
 
-在UIviewController中把观察者添加到init,viewDidLoad和viewWillAppear， 都是很好的选择。为了提高性能和避免一些不好的副作用，你应该尽可能晚的添加观察者然后再尽可能快的删除它。 
+在UIviewController中把观察者添加到init,viewDidLoad和viewWillAppear， 都是很好的选择。为了提高性能和避免一些不好的副作用，你应该尽可能晚的添加观察者然后再尽可能早的删除它。 
 
 通过指定通知的名字，观察者可以注册一个相应的通知，这相当于过滤器的作用。在上面的例子里我们不关心谁发送的消息所以设置为nil。
 
-当不同实例发送相同名字的通知指定发送者的名字就很有用哦（比如你可能对UITextFieldTextDidChangeNotification中特定的UITextField这个通知感兴趣）。如果没有指定通知的发送者，你就会收到所有被指定了这个相同名字的通知。如果没有指定通知的名字你就会收到所有的发送者发送的被指定了这个名字的通知。
+当不同实例发送相同名字的通知指定发送者的名字就很有用哦（比如你可能对UITextFieldTextDidChangeNotification中特定的UITextField这个通知感兴趣）。如果没有指定通知的发送者，你就会收到所有被指定了这个相同名字的通知。如果没有指定通知的名字你就会收到所有的发送者发送的通知。
 
 ##Handling the notification
+--
 
-观察者接收通知直到被从NSNotificationCenter中移除。没次调用addObserver通知都会被发送一次。如果你接受的太多的通知，有可能添加了不止一次观察者（比如你再viewWillAppear中注册了观察者但是没有在dealloc中销毁。）
+观察者接收通知直到被从NSNotificationCenter中移除。每次调用addObserver通知都会被发送一次。如果你接收了太多的通知，有可能添加了不止一次观察者（比如你再viewWillAppear中注册了观察者但是没有在dealloc中销毁。）
 
 NSNotificationCenter 会在addObserver:selector:name:object: 中使用selector选择器提供一个NSNotification类型的参数。这个选择器selector会在通知被post的同一线程中调用。除非在相应的文档说明这个选择器selector运行在不同的线程中，否则一般都是在主线程中。
 
@@ -132,19 +136,21 @@ NSNotification对象是一个集合。它有一个对象id  这个对象id一般
 
 
 ##Removing the observer
+--
 
-你在以后再也不需要通知时观察者应该立即被移除。最好的时机就是在接受到最后一条通知(MPMoviePlayerPlaybackDidFinishNotification之后加载UI)最坏的时机就是在dealloc方法里。如果你忘了注销观察者，NSNotificationCenter 有可能把通知发送给一个已注销了的实例。
+你在以后再也不需要通知时观察者应该立即被移除。最好的时机就是在接受到最后一条通知(MPMoviePlayerPlaybackDidFinishNotification之后加载UI)最坏的时机就是在dealloc方法里。如果你忘了注销观察者NSNotificationCenter 有可能把通知发送给一个已注销了的实例。
 
-NSNotificationCenter 提供两个注销观察者的方法。removeObserver: 和removeObserver:name:object:。前者是注销所有的观察者，后者指定了被注销者的名字和发送者，名字和发送者可以是nil。后者虽然很容易调用removeObserver：如果你在非注册的地方注销掉这是一个不好的习惯（比如父类，子类，类别中）。所以当注销时尽量指定名字和发送者。
+NSNotificationCenter 提供两个注销观察者的方法。removeObserver: 和removeObserver:name:object:。前者是注销所有的观察者，后者指定了被注销者的名字和发送者，名字和发送者可以是nil。虽然很容易调用removeObserver：但是如果你在非注册的地方注销掉，这是一个不好的习惯（比如父类，子类，类别中），所以当注销时尽量指定名字和发送者。
 
 你也可以像上面那样用blocks注销观察者，在这里观察者在addObserverForName:object:queue:usingBlock:中添加，对于这些block观察者你使用单一参数的removeObserver：注销会更好。
 
 ##Sending synchronous notifications
+--
 通知对于广播事件很友好，比如模型的改变，用户动作，后台程序的状态。与委托模式不同的是，notifications可以用于通知一些相关的对象或者添加一些低耦合的事件（在大多数情况下，观察者只需要知道通知的名字）
 
-Naming notifications
-
-创建自己的通知的第一步就是要选择一个唯一的名字。文档中建议要这样：
+##Naming notifications
+--
+创建自己的通知的第一步就是要选择一个唯一的名字。文档[Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html)中建议要这样：
 
 {% highlight bash %}
 [Name of associated class] + [Did | Will] + [UniquePartOfName] + Notification
@@ -160,17 +166,16 @@ Naming notifications
 
 ##Posting the notification
 
-每个应用中都有被用来广播通知的默认NSNotificationCenter实例。你可以创建通知对象并发送它，或者你可以两个方便的方法这么做。如果你不需要发送附加的信息发送一个通知很简单比如：
+每个应用中都有被用来广播通知的默认NSNotificationCenter实例。你可以创建通知对象并post。如果你发送一个不需要发送附加的信息的通知很简单比如：
 
 {% highlight bash %}
 [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:notificationSender];
 {% endhighlight %}
 
 
-这个object参数通常用于传递对象发送的通知，正常情况下self. NSNotificationCenter 将会用给的名字和发送者创建一个没有附加信息的NSNotification对象
+这个object参数通常用于传递对象发送的通知，正常情况下self. NSNotificationCenter 将会用给定的名字和发送者创建一个没有附加信息的NSNotification对象
 
-通知被无序的发送到观察者哪里。发送同步通知 意味着直到所有的观察者发送完通知否则postNotification:不会返
-回。另外观察者将在通知被发送的相同线程中调用。除非你显式的声明，否则观察者
+通知被无序的发送到观察者哪里。发送同步通知 意味着直到所有的观察者处理完通知否则postNotification:不会返回。另外观察者将在通知被发送的相同线程中调用。除非你显式的声明，否则观察者认为在主线程中接收通知
 
 考虑到要在后台定期更新进度。我们想要一边发送通知一边进行我们的操作还要在主线程中通知观察者。用调度队列实现的方法是：
 
