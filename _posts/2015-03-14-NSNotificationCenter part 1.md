@@ -30,6 +30,8 @@ UIviewController实例，用notifications就会有一个更加清晰的解耦解
 	
 最后[iOS](https://gist.github.com/hpique/7554209)和[OS X](https://gist.github.com/hpique/8198196)的一系列的公共通知都在附件里。我们将用iOS的类举例子，在OS X中也实用。
 
+<!--more-->
+
 ##Notifications类
 --
 

@@ -21,6 +21,10 @@ share: true
 
 为了不使用自定义的观察者，一个更简洁的方法是使用NSNotificationCenter。但是我们要是直接使用它，就会丢失观察者模式的强类型。下面就是如何使用NSNotificationCenter实现这种流行的模式。
 
+
+<!--more-->
+
+
 ##Typed observer
 --
 首先，定义观察者协议，在这个例子中我们自定义一个 audio player(HPEAudioPlayer)
