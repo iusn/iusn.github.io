@@ -50,7 +50,7 @@ OS X 为了在两个进程之间通信提供第四个方法叫NSDistributedNotif
 接收一个通知只需要很少的一段代码。比如你想在UIViewController之外收到一个memory warning(UIApplicationDidReceiveMemoryWarningNotification)之后清除缓存对象，代码应该是这样的
 
 
-{% highlight bash %}
+{% highlight objective-c %}
 -(id) init {
     if (self = [super init]) {
         _cache = [[NSCache alloc] init];
@@ -94,7 +94,7 @@ NSNotificationCenter 会在addObserver:selector:name:object: 中使用selector�
 NSNotification对象是一个集合。它有一个对象id  这个对象id一般是消息的发送者和userInfo字典关于通知的附加信息。比如：
 
 
-{% highlight bash %}
+{% highlight objective-c %}
 -(void) moviePlayerPlaybackDidFinish:(NSNotification*)notification {
     MPMoviePlayerController *mpObject = (MPMoviePlayerController *) notification.object; 
     NSDictionary *userInfo = notification userInfo;
@@ -108,7 +108,7 @@ NSNotification对象是一个集合。它有一个对象id  这个对象id一般
 你也可以用blocks处理通知来做单元测试
  
 
-{% highlight bash %}
+{% highlight objective-c %}
 -(id) init {
     if (self = [super init]) {
         _cache = [[NSCache alloc] init];
@@ -152,7 +152,7 @@ NSNotificationCenter 提供两个注销观察者的方法。removeObserver: 和r
 --
 创建自己的通知的第一步就是要选择一个唯一的名字。文档[Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html)中建议要这样：
 
-{% highlight bash %}
+{% highlight objective-c %}
 [Name of associated class] + [Did | Will] + [UniquePartOfName] + Notification
 {% endhighlight %}
 
@@ -168,7 +168,7 @@ NSNotificationCenter 提供两个注销观察者的方法。removeObserver: 和r
 
 每个应用中都有被用来广播通知的默认NSNotificationCenter实例。你可以创建通知对象并post。如果你发送一个不需要发送附加的信息的通知很简单比如：
 
-{% highlight bash %}
+{% highlight objective-c %}
 [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:notificationSender];
 {% endhighlight %}
 
@@ -179,7 +179,7 @@ NSNotificationCenter 提供两个注销观察者的方法。removeObserver: 和r
 
 考虑到要在后台定期更新进度。我们想要一边发送通知一边进行我们的操作还要在主线程中通知观察者。用调度队列实现的方法是：
 
-{% highlight bash %}
+{% highlight objective-c %}
 while (!finished) {
     // Do something
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -195,7 +195,7 @@ while (!finished) {
 
 在大多数情况你想要在通知中发送附加信息，比如上面的进度值。通知有一个带有自定义值的字典叫userInfo。NSNotifcationCneter 提供一个方便的方法发送带有userInfo信息的通知
 
-{% highlight bash %}
+{% highlight objective-c %}
 NSDictionary *userInfo = @{@"someKey": someValue};
 [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:notificationSender userInfo:userInfo];
 {% endhighlight %}
@@ -213,7 +213,7 @@ NSNotification 是Cocoa的类簇，类簇就是以另一种方式调用抽象类
  当你使用你自己的NSNotification的子类时只是简单的发送通知不是很好。你必须在子类的implementation中或者调用postNotification：之前创建一个通知对象并提供它的name，object如果合适的话还要提供userInfo。比如：
 
 
-{% highlight bash %}
+{% highlight objective-c %}
  HPECustomNotification *notification = [[HPECustomNotification alloc] initWithObject:self];
 [[NSNotificationCenter defaultCenter] postNotification:notification];
 {% endhighlight %}

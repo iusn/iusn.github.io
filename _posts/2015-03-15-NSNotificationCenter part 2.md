@@ -26,7 +26,7 @@ share: true
 首先，定义观察者协议，在这个例子中我们自定义一个 audio player(HPEAudioPlayer)
 
 
-{% highlight bash %}
+{% highlight objective-c %}
 @protocol HPEAudioPlayerObserver& lt;NSObject& gt;
 @optional
  
@@ -41,7 +41,7 @@ share: true
 
 然后observable类中添加方法来现实添加和删除观察者
 
-{% highlight bash %}
+{% highlight objective-c %}
 @interface HPEAudioPlayer(Observable)
  
 -(void)addObserver:(id& lt;HPEAudioPlayerObserver& gt;)observer;
@@ -52,7 +52,7 @@ share: true
 
 在observable类的实现方法中我们定义通知名字为常量
 
-{% highlight bash %}
+{% highlight objective-c %}
 NSString *const HPEAudioPlayerDidStartPlaybackNotificationName = @"HPEAudioPlayerDidStartPlaybackNotification";
 
 NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlayerDidFinishPlaybackNotification"
@@ -60,7 +60,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 
 使用适当的选择器添加或者删除观察者以减少对NSNotificationCenter调用
 
-{% highlight bash %}
+{% highlight objective-c %}
 -(void)addObserver:(id& lt;HPEAudioPlayerObserver& gt;)observer {
     { // audioPlayerDidStartPlayback
         SEL selector = @selector(audioPlayerDidStartPlayback:);
@@ -85,7 +85,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 
 最后通知观察者就像发送对应的通知一样。接下来的就交给NSNotificationCenter
 
-{% highlight bash %}
+{% highlight objective-c %}
 -(void)notifyDidStartPlayback {
     [[NSNotificationCenter defaultCenter] postNotificationName:HPEAudioPlayerDidStartPlaybackNotificationName object:self]
 }
@@ -103,7 +103,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 
 对于我们audio player例子我们可以使用类别来实现
 
-{% highlight bash %}
+{% highlight objective-c %}
 @interface NSNotification (HPEAudioPlayerObserver)
  
 @property (nonatomic, readonly) HPEAudioPlayer *hpe_audioPlayer;
@@ -135,7 +135,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 
 子类化NSNotification需要提供一个完整的观察者，包括参数，通知方法，自己的子类。我们的观察者协议变成如下样子：
 
-{% highlight bash %}
+{% highlight objective-c %}
 @protocol HPEAudioPlayerObserver& lt;NSObject& gt;
 @optional
  
@@ -148,7 +148,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
  
 在part1中NSNotification是一个类族，当调用init时抛出一个异常。这里实现NSNotification子类需要一些样板代码：
 
-{% highlight bash %}
+{% highlight objective-c %}
 @interface HPEAudioPlayerNotification : NSNotification
  
 -(id)initWithAudioPlayer:(HPEAudioPlayer*)audioPlayer;
