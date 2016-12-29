@@ -25,23 +25,16 @@
   <article class="hentry">
     <header class="header-title">
       <div class="header-title-wrap">
-        <h1 class="entry-title"><a href="{{ site.url }}" title="{{ page.title }}">{{ page.title }}</a></h1>
-        <h2>{{ page.date | date: "%B %d, %Y" }}</h2>
+        {% if page.link %}
+          <h1 class="entry-title"><i class="fa fa-bookmark permalink"></i> <a href="{{ page.link }}">{{ page.title }}</a></h1>
+        {% else %}
+          <h1 class="entry-title"><a href="{{ site.url }}{{ page.url }}" rel="bookmark" title="{{ page.title }}">{{ page.title }}</a></h1>
+        {% endif %}
+        <h2><span class="entry-date date published"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time></span></h2>
         {% if site.reading_time %}
         <p class="entry-reading-time">
           <i class="fa fa-clock-o"></i>
-          {% assign readtime = content | number_of_words | divided_by:site.words_per_minute%}
-          {% if readtime <= 1 %}1 min. read
-          {% elsif readtime <= 2%}2 min. read
-          {% elsif readtime <= 3%}3 min. read
-          {% elsif readtime <= 4%}4 min. read
-          {% elsif readtime <= 5%}5 min. read
-          {% elsif readtime <= 6%}6 min. read
-          {% elsif readtime <= 7%}7 min. read
-          {% elsif readtime <= 8%}8 min. read
-          {% elsif readtime <= 9%}9 min. read
-          {% elsif readtime <= 10%}10 min. read
-          {% else %}10+ min. read{% endif %}
+          {% include read-time.html %}
         </p><!-- /.entry-reading-time -->
         {% endif %}
       </div><!-- /.header-title-wrap -->
@@ -49,32 +42,14 @@
     <div class="entry-content">
       {{ content }}
       <footer class="entry-meta">
-        <span class="entry-tags">{% for tag in page.tags %}<a href="{{ site.url }}/tags/#{{ tag }}" title="Pages tagged {{ tag }}" class="tag">{{ tag }}</a>{% unless forloop.last %}{% endunless %}{% endfor %}</span>
-        <span><span class="entry-date date published updated"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %b %Y" }}</time></span></span>
-        {% if page.modified %}(revised: <span class="entry-date date modified"><time datetime="{{ page.modified }}">{{ page.modified | date: "%d %b %Y" }}</time></span>){% endif %}
-        {% if page.share %}<div class="social-share">
-          <ul class="socialcount socialcount-small inline-list">
-            <li class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u={{ site.url }}{{ page.url }}" title="Share on Facebook"><span class="count"><i class="fa fa-facebook-square"></i> Like</span></a></li>
-            <li class="twitter"><a href="https://twitter.com/intent/tweet?text={{ site.url }}{{ page.url }}" title="Share on Twitter"><span class="count"><i class="fa fa-twitter-square"></i> Tweet</span></a></li>
-            <li class="googleplus"><a href="https://plus.google.com/share?url={{ site.url }}{{ page.url }}" title="Share on Google Plus"><span class="count"><i class="fa fa-google-plus-square"></i> Share</span></a></li>
-          </ul>
-        </div><!-- /.social-share -->{% endif %}
+        <span class="entry-tags">{% for tag in page.tags %}<a href="{{ site.url }}/tags/#{{ tag }}" title="Pages tagged {{ tag }}" class="tag"><span class="term">{{ tag }}</span></a>{% unless forloop.last %}{% endunless %}{% endfor %}</span>
+        {% if page.modified %}<span>Updated on <span class="entry-date date updated"><time datetime="{{ page.modified }}">{{ page.modified | date: "%B %d, %Y" }}</time></span></span>
+        <span class="author vcard"><span class="fn">{{ site.owner.name }}</span></span>{% endif %}
+        {% if page.share != false %}{% include social-share.html %}{% endif %}
       </footer>
     </div><!-- /.entry-content -->
-    {% if site.disqus_shortname and page.comments %}<section id="disqus_thread"></section><!-- /#disqus_thread -->{% endif %}
-    <div class="read-more">
-        <div class="read-more-content">
-          {% if page.next.url %}
-          <h3><a href="{{ site.url }}{{ page.next.url }}" title="{{ page.next.title }}">&#8592; {{ page.next.title }}</a></h3>
-          <span>Published {{ page.next.date | date: "%d %b %Y" }}</span>
-          {% endif %}
-          {% if page.next.url and page.previous.url%}<hr>{% endif %}
-          {% if page.previous.url %}
-          <h3><a href="{{ site.url }}{{ page.previous.url }}" title="{{ page.previous.title }}">{{ page.previous.title }} &#8594;</a></h3>
-          <span>Published {{ page.previous.date | date: "%d %b %Y" }}</span>
-          {% endif %}
-        </div><!-- /.read-more-content -->
-    </div><!-- /.read-more -->
+    {% if page.comments != false and site.disqus_shortname %}<section id="disqus_thread"></section><!-- /#disqus_thread -->{% endif %}
+    {% if site.related_posts.size > 0 %}{% include read-more.html %}{% endif %}
   </article>
 </div><!-- /#main -->
 

@@ -8,12 +8,7 @@ category: translation
 tags: [NSNotificationCenter]
 comments: true
 share: true
-
 ---
-
-
- 
-新手第一次翻译如果有哪里不对的地方希望您提出^_^
 
 
 ##[原文](http://www.hpique.com/2013/12/nsnotificationcenter-part-1/)
@@ -27,7 +22,7 @@ UIviewController实例，用notifications就会有一个更加清晰的解耦解
 - [part2](http://www.hpique.com/2013/12/nsnotificationcenter-part-3/)用notifications的观察者模式。
 - [part3]()如何用OCMock实现notifications的单元测试。
 - [part4](http://www.hpique.com/2013/12/nsnotificationcenter-part-4/)用NSNotificationQueue处理异步通知。
-	
+
 最后[iOS](https://gist.github.com/hpique/7554209)和[OS X](https://gist.github.com/hpique/8198196)的一系列的公共通知都在附件里。我们将用iOS的类举例子，在OS X中也实用。
 
 <!--more-->
@@ -62,25 +57,25 @@ OS X 为了在两个进程之间通信提供第四个方法叫NSDistributedNotif
     }
     return self;
 }
- 
+
 -(void) applicationDidReceiveMemoryWarning:(NSNotification*)notification {
     [_cache removeAllObjects];
 }
- 
+
 -(void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self
         name:UIApplicationDidReceiveMemoryWarningNotification];
 }
 {% endhighlight %}
 
- 
- 
+
+
 ##Adding the observer
 --
 
 接收通知的对象被称为观察者，必须加到NSNotificationCenter。除非你有很强的理由不这么做，否则永远都是defaultCenter。
 
-在UIviewController中把观察者添加到init,viewDidLoad和viewWillAppear， 都是很好的选择。为了提高性能和避免一些不好的副作用，你应该尽可能晚的添加观察者然后再尽可能早的删除它。 
+在UIviewController中把观察者添加到init,viewDidLoad和viewWillAppear， 都是很好的选择。为了提高性能和避免一些不好的副作用，你应该尽可能晚的添加观察者然后再尽可能早的删除它。
 
 通过指定通知的名字，观察者可以注册一个相应的通知，这相当于过滤器的作用。在上面的例子里我们不关心谁发送的消息所以设置为nil。
 
@@ -98,7 +93,7 @@ NSNotification对象是一个集合。它有一个对象id  这个对象id一般
 
 {% highlight objective-c %}
 -(void) moviePlayerPlaybackDidFinish:(NSNotification*)notification {
-    MPMoviePlayerController *mpObject = (MPMoviePlayerController *) notification.object; 
+    MPMoviePlayerController *mpObject = (MPMoviePlayerController *) notification.object;
     NSDictionary *userInfo = notification userInfo;
     MPMovieFinishReason reason = [[userInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] intValue];
  }
@@ -106,16 +101,16 @@ NSNotification对象是一个集合。它有一个对象id  这个对象id一般
 
 
  想知道字典中制定的通知需要debug或者查文档。在没有被告知的情况下不要假设任何一个key。
- 
+
 你也可以用blocks处理通知来做单元测试
- 
+
 
 {% highlight objective-c %}
 -(id) init {
     if (self = [super init]) {
         _cache = [[NSCache alloc] init];
         _observer = [[NSNotificationCenter defaultCenter]
-            addObserverForName:UIApplicationDidReceiveMemoryWarningNotification 
+            addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
             object:nil
             queue:nil
             usingBlock:^(NSNotification *notification) {
@@ -125,7 +120,7 @@ NSNotification对象是一个集合。它有一个对象id  这个对象id一般
     }
     return self;
 }
- 
+
 -(void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:_observer
         name:UIApplicationDidReceiveMemoryWarningNotification];
@@ -163,7 +158,7 @@ NSNotificationCenter 提供两个注销观察者的方法。removeObserver: 和r
 @"HPEAudioPlayerDidStartPlaybackNotification" 这样就是很好的命名。
 
 @"didStartPlayback" 这个命名不好
-		
+
 通知的命名必须是公共的常量，这样在观察者中你就可以只改通知的名字不需要改变其他的。
 
 ##Posting the notification
@@ -204,14 +199,14 @@ NSDictionary *userInfo = @{@"someKey": someValue};
 
 
 再一次声明 你必须定义公共常量作为userInfo 的key。
- 
+
 ##Subclassing NSNotification
- 
+
 如果userInfo字典不符合你的需求，或者你喜欢定义属性类型你可以子类化NSNotification。这里有一个小小的警告
- 
+
 NSNotification 是Cocoa的类簇，类簇就是以另一种方式调用抽象类。特别是没有实现name，object，userInfo和调用init抛出异常。
 因为有了上面的警告，子类化NSNotification 一般是不赞成的并且一些开发人员喜欢使用类别，这两个例子在part2中提供。
- 
+
  当你使用你自己的NSNotification的子类时只是简单的发送通知不是很好。你必须在子类的implementation中或者调用postNotification：之前创建一个通知对象并提供它的name，object如果合适的话还要提供userInfo。比如：
 
 

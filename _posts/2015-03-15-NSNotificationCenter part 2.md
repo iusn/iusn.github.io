@@ -33,11 +33,11 @@ share: true
 {% highlight objective-c %}
 @protocol HPEAudioPlayerObserver& lt;NSObject& gt;
 @optional
- 
+
 -(void)audioPlayerDidStartPlayback:(NSNotification*)notification;
 
 -(void)audioPlayerDidFinishPlayback:(NSNotification*)notification;
- 
+
 @end
 {% endhighlight %}
 
@@ -47,10 +47,10 @@ share: true
 
 {% highlight objective-c %}
 @interface HPEAudioPlayer(Observable)
- 
+
 -(void)addObserver:(id& lt;HPEAudioPlayerObserver& gt;)observer;
 -(void)removeObserver:(id& lt;HPEAudioPlayerObserver& gt;)observer;
- 
+
 @end
 {% endhighlight %}
 
@@ -79,7 +79,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
         }
     }
 }
- 
+
 -(void)removeObserver:(id& lt;HPEAudioPlayerObserver& gt;)observer {
     [[NSNotificationCenter defaultCenter] removeObserver:observer name:HPEAudioPlayerDidStartPlaybackNotificationName];
     [[NSNotificationCenter defaultCenter] removeObserver:observer name:HPEAudioPlayerDidFinishPlaybackNotificationName];
@@ -93,7 +93,7 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 -(void)notifyDidStartPlayback {
     [[NSNotificationCenter defaultCenter] postNotificationName:HPEAudioPlayerDidStartPlaybackNotificationName object:self]
 }
- 
+
 -(void)notifyDidFinishPlayback {
     NSDictionary *userInfo = @{HPEAudioPlayerNotificationEndTimeKey: @(_endTime)};
     [[NSNotificationCenter defaultCenter] postNotificationName:HPEAudioPlayerDidFinishPlaybackNotificationName object:self userInfo:userInfo]
@@ -109,24 +109,24 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 
 {% highlight objective-c %}
 @interface NSNotification (HPEAudioPlayerObserver)
- 
+
 @property (nonatomic, readonly) HPEAudioPlayer *hpe_audioPlayer;
 @property (nonatomic, readonly) NSTimeInterval hpe_endTime;
- 
+
 @end
- 
+
 @implementation NSNotification (HPEAudioPlayerObserver)
- 
+
 -(HPEAudioPlayer*)hpe_audioPlayer {
     return self.object;
 }
- 
+
 -(NSTimeInterval)hpe_endTime {
     return [[self.userInfo objectForKey:HPEAudioPlayerNotificationEndTimeKey] doubleValue];
 }
- 
+
 @end
- 
+
 {% endhighlight %}
 
 通过使用类别方法发送者不需要指定一个object也不需要userInfo字典的key。注意额外添加的属性都是readonly，NSNotification对象希望这些都是不可改变的
@@ -142,66 +142,66 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 {% highlight objective-c %}
 @protocol HPEAudioPlayerObserver& lt;NSObject& gt;
 @optional
- 
+
 -(void)audioPlayerDidStartPlayback:(HPEAudioPlayerDidStartPlaybackNotification*)notification;
 
 -(void)audioPlayerDidFinishPlayback:(HPEAudioPlayerDidEndPlaybackNotification*)notification;
- 
+
 @end
 {% endhighlight %}
- 
+
 在part1中NSNotification是一个类族，当调用init时抛出一个异常。这里实现NSNotification子类需要一些样板代码：
 
 {% highlight objective-c %}
 @interface HPEAudioPlayerNotification : NSNotification
- 
+
 -(id)initWithAudioPlayer:(HPEAudioPlayer*)audioPlayer;
- 
+
 @property (nonatomic, readonly) HPEAudioPlayer *audioPlayer;
- 
+
 @end
- 
+
 @interface HPEAudioPlayerDidStartPlaybackNotification : HPEAudioPlayerNotification
- 
+
 @end
- 
+
 @interface HPEAudioPlayerDidEndPlaybackNotification : HPEAudioPlayerNotification
- 
+
 -(id)initWithAudioPlayer:(HPEAudioPlayer*)audioPlayer endTime:(NSTimeInterval)endTime;
- 
+
 @property (nonatomic, readonly) NSTimeInterval endTime;
- 
+
 @end
- 
+
 @implementation HPEAudioPlayerNotification
- 
+
 -(id)initWithAudioPlayer:(HPEAudioPlayer *)audioPlayer {
     _audioPlayer = audioPlayer;
     return self;
 }
- 
+
 @end
- 
+
 @implementation HPEAudioPlayerDidStartPlaybackNotification
- 
+
 -(NSString*)name {
     return @"HPEAudioPlayerDidStartPlaybackNotification";
 }
 @end
- 
+
 @implementation HPEAudioPlayerDidEndPlaybackNotification
- 
+
 -(id)initWithAudioPlayer:(HPEAudioPlayer*)audioPlayer endTime:(NSTimeInterval)endTime {
     if (self = [super initWithAudioPlayer:audioPlayer]) {
         _endTime = endTime;
     }
     return self;
 }
- 
+
 -(NSString*)name {
     return @"HPEAudioPlayerDidEndPlaybackNotification";
 }
- 
+
 @end
 {% endhighlight %}
 
@@ -213,5 +213,3 @@ NSString *const HPEAudioPlayerDidFinishPlaybackNotificationName = @"HPEAudioPlay
 ##Further reading
 --
 - [Part 1: Receiving and testing notifications](http://iusn.github.io/NSNotificationCenter%20part%201/)
-
-
